@@ -1,2 +1,2 @@
 # MySQL-and-PostgreSQL
-在code中，分别给出了对MySQL和PostgreSQL进行基准测试的sysbench脚本的相关代码,在mydateset中给出了相关测试的截图以及一些报错。
+在code中，分别给出了对MySQL和PostgreSQL进行基准测试的sysbench脚本的相关代码,在mydateset中给出了相关测试的截图以及一些报错及其解决方案。
