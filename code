@@ -1,19 +1,75 @@
- sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
---mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write prepare
+sysbench [options]... [test_lua] [lua_options] [command]
 
-sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
+测试MySQL
+eg:sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
 --mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write run
 
-sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
---mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write prepare cleanup
+--mysql-port=[LIST,...]          MySQL server port [3306]
+--mysql-user=STRING              MySQL user [sbtest]
+--mysql-host=[LIST,...]          MySQL server host [localhost]
+--threads=N                     指定线程数[1]
+--time=N                        限制最长执行时间，0表示不限制[10]
+--report-interval=N             每隔几秒报告一次结果，0表示禁用间隔报告[0]
+--mysql-password=STRING          MySQL password []
+--mysql-db=STRING                MySQL database name [sbtest]
 
-sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
---pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write prepare
+[lua_options]
+olt_read_write                   测试综合读写性能
+olt_read_only                   测试只读性能
+olt_delete                      测试删除性能
+olt_update_non_index             测试更新非索引字段性能
+olt_insert                       测试插入性能
+olt_write_only                   测试写入性能
 
-sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
+[command]
+prepare：准备数据的命令。例如，在sysbench压力测试之前，需要先准备好测试库、测试表以及测试表中的数据。具体用法见后文。
+run：表示进行压力测试。
+cleanup：清除测试时产生的数据。
+help：输出给定lua脚本的帮助信息。
+
+
+测试PostgreSQL
+eg:sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
 --pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write run 
 
-sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
---pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write cleanup
 
+测试结果
+Initializing worker threads...
+ 
+Threads started!
+ 
+ 
+####以下是每5秒返回一次的结果，统计的指标包括：
+#### 线程数、tps(每秒事务数)、qps(每秒查询数)、
+#### 每秒的读/写/其它次数、延迟、每秒错误数、每秒重连次数
+[ 5s ] thds: 4 tps: 130.16 qps: 2606.30 (r/w/o: 1824.51/520.66/261.13) lat (ms,95%): 104.84 err/s: 0.00 reconn/s: 0.00
+[ 10s ] thds: 4 tps: 126.74 qps: 2539.17 (r/w/o: 1778.17/507.52/253.47) lat (ms,95%): 108.68 err/s: 0.00 reconn/s: 0.00
+[ 15s ] thds: 4 tps: 136.54 qps: 2736.34 (r/w/o: 1915.25/548.01/273.07) lat (ms,95%): 102.97 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 4 tps: 107.44 qps: 2148.65 (r/w/o: 1505.60/428.17/214.89) lat (ms,95%): 132.49 err/s: 0.00 reconn/s: 0.00
+ 
+SQL statistics:
+    queries performed:
+        read:          35098   # 执行的读操作数量
+        write:         10028   # 执行的写操作数量
+        other:         5014    # 执行的其它操作数量
+        total:         50140
+    transactions:      2507   (124.29 per sec.)    # 执行事务的平均速率
+    queries:           50140  (2485.82 per sec.)   # 平均每秒能执行多少次查询
+    ignored errors:    0      (0.00 per sec.)
+    reconnects:        0      (0.00 per sec.)
+ 
+General statistics:
+    total time:                  20.1694s     # 总消耗时间
+    total number of events:      2507         # 总请求数量(读、写、其它)
+ 
+Latency (ms):
+         min:                            2.32
+         avg:                           32.13
+         max:                          575.78
+         95th percentile:              118.92    # 采样计算的平均延迟
+         sum:                        80554.96
+ 
+Threads fairness:
+    events (avg/stddev):           626.7500/2.49
+    execution time (avg/stddev):   20.1387/0.04
 
