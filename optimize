@@ -1,0 +1,6 @@
+explain select * from sbtest1 limit 900000,10;
+
+ select * from sbtest1 limit 900000,10;
+explain select * from sbtest1 u1,(select id from sbtest1 order by id limit 900000,10) t where u1.id=t.id;
+
+ explain select * from sbtest1 where id>900000 limit 10;
