@@ -1,0 +1,24 @@
+ sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
+--mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write prepare
+
+sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
+--mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write run
+
+sysbench --db-driver=mysql --time=20 --threads=250 --report-interval=5 --mysql-host=127.0.0.1 
+--mysql-port=3306 --mysql-user=admin --mysql-password=admin888 --mysql-db=sbtest --tables=10 --table_size=100000 oltp_read_write prepare cleanup
+
+sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
+--pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write prepare
+
+sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
+--pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write run 
+
+sysbench --db-driver=pgsql --time=20 --threads=4 --report-interval=5 --pgsql-host=127.0.0.1 --pgsql-port=5432 
+--pgsql-user=user1 --pgsql-password=Password123 --pgsql-db=TEST --tables=10 --table_size=100000 oltp_read_write cleanup
+
+explain select * from sbtest1 limit 900000,10;
+
+ select * from sbtest1 limit 900000,10;
+explain select * from sbtest1 u1,(select id from sbtest1 order by id limit 900000,10) t where u1.id=t.id;
+
+ explain select * from sbtest1 where id>900000 limit 10;
