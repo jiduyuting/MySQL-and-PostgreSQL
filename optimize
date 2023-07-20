@@ -1,5 +1,5 @@
 explain select * from sbtest1 limit 900000,10;
-<div align=center><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/88324880/238262293-e1c00a49-064d-4d8f-8a1d-69e691b1fa3f.png"></div>
+
  select * from sbtest1 limit 900000,10;
 explain select * from sbtest1 u1,(select id from sbtest1 order by id limit 900000,10) t where u1.id=t.id;
 
