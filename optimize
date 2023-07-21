@@ -1,3 +1,15 @@
+SQL语句优化：
 避免在where子句中对字段进行表达式操作: 如select * from sbtest1 where id*10=40000;改为select * from sbtest1 where id=4000;
+
 不建议使用%前缀模糊查询：如select * from sbtest1 where id=40000 and id like "%1"; 但%可在后面select * from sbtest1 where id=40000 and id like "1%；
-以上操作会使索引失效，从而导致查询效率低。
+
+避免在where子句中使用or来连接条件，使用union all,如 select * from sbtest1 where id=1111111 or c=18021;可改为select * from sbtest1 where id=1111111 
+union all  select * from sbtest1 where c='18021'
+
+通常使用分页查询是来提高我们的查询效率的，因为通常用户不希望一下子查询到那么多的数据，一般是查询前几条数据，此时的分页效率会比较高。但是有时候在分页查询会遇到一个比较尴尬的问题，
+那就是limit N,10，即前面跳过N多条记录，只查询N多条记录的后面几条记录。如果N的值非常大，那么效率必然就会很低。如select * from sbtest1 limit 900000,10;
+可改为select * from sbtest1 u1,(select id from sbtest1 order by id limit 900000,10) t where u1.id=t.id;
+或select * from sbtest1 where id>900000 limit 10;
+
+避免在where子句中使用or来连接条件，而是使用union all如select * from sbtest1 where  id=1111111 or c=18201;
+改为select * from sbtest1 where id=1111111 union all select * from sbtest1 where c=18201;
